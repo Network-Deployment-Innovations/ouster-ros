@@ -31,6 +31,8 @@ RUN set -xe \
 # Install build dependencies using rosdep
 COPY --chown=build:build package.xml $OUSTER_ROS_PATH/package.xml
 
+RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
+
 RUN set -xe         \
 && apt-get update   \
 && rosdep init      \
