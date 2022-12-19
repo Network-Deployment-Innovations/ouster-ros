@@ -1,6 +1,5 @@
-ARG ROS_DISTRO=melodic
-
-FROM ros:${ROS_DISTRO}-ros-core AS build-env
+# Ouster Lidar ROS1 Melodic Setup
+FROM dustynv/ros:melodic-ros-base-l4t-r32.7.1 AS build-env
 ENV DEBIAN_FRONTEND=noninteractive \
     BUILD_HOME=/var/lib/build \
     OUSTER_ROS_PATH=/opt/catkin_ws/src/ouster-ros
