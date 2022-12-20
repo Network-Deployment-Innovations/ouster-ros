@@ -12,6 +12,13 @@ topics of `/ouster/imu` and `/ouster/points`. In the case the sensor supports du
 configured to use this capability, then another topic will published named `/ouster/points2` which
 corresponds to the second point cloud.
 
+## Forking Note
+
+This repo was forked to base the Docker container on one for the Jetson platform. No other functional changes made.
+
+- Dockerhub: [`dustynv/ros`](https://hub.docker.com/r/dustynv/ros/tags):[`melodic-ros-base-l4t-r32.7.1`](https://hub.docker.com/layers/dustynv/ros/melodic-ros-base-l4t-r32.7.1/images/sha256-b794335131f37de5d4ae4c8e3b88532e2f4fa9e63c2fbce9236def1d5e2a5f45?context=explore)
+- GitHub: [`dusty-nv/jetson-containers`](https://github.com/dusty-nv/jetson-containers)
+
 ## Requirements
 This driver only supports Melodic and Noetic ROS distros.
 
