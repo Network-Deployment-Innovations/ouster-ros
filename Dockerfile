@@ -18,7 +18,8 @@ RUN set -xue \
     debhelper               \
     $PY-rosdep              \
     $PY-rospkg              \
-    $PY-bloom
+    $PY-bloom               \
+    ros-melodic-robot-body-filter
 
 # Set up non-root build user
 ARG BUILD_UID=1000
