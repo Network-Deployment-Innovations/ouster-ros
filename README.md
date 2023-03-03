@@ -12,6 +12,13 @@ messages on the topics of `/ouster/imu` and `/ouster/points`. In the case the us
 dual return and it was configured to use this capability, then another topic will published under the
 name `/ouster/points2` which corresponds to the second point cloud.
 
+## Forking Note
+
+This repo was forked to base the Docker container on one for the Jetson platform. No other functional changes made.
+
+- Dockerhub: [`dustynv/ros`](https://hub.docker.com/r/dustynv/ros/tags):[`dustynv/ros:foxy-ros-base-l4t-r35.2.1`](https://hub.docker.com/layers/dustynv/ros/foxy-ros-base-l4t-r35.2.1/images/sha256-6caa3298c617078bd2e1cd931bca14732afbd5db3babaa68ffac9b9652ad1f6d?context=explore)
+- GitHub: [`dusty-nv/jetson-containers`](https://github.com/dusty-nv/jetson-containers)
+
 ## Requirements
 This driver only supports **Foxy** ROS 2 distro. Please refer to ROS 2 online documentation on how to
 setup ros on your machine before proceeding with the remainder of this guide.
