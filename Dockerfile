@@ -1,4 +1,4 @@
-ARG ROS_DISTRO=rolling
+ARG ROS_DISTRO=foxy
 
 FROM dustynv/ros:${ROS_DISTRO}-ros-base-l4t-r35.2.1 AS build-env
 ENV DEBIAN_FRONTEND=noninteractive \
