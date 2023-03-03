@@ -1,6 +1,6 @@
 ARG ROS_DISTRO=rolling
 
-FROM ros:${ROS_DISTRO}-ros-core AS build-env
+FROM dustynv/ros:${ROS_DISTRO}-ros-base-l4t-r35.2.1 AS build-env
 ENV DEBIAN_FRONTEND=noninteractive \
     BUILD_HOME=/var/lib/build \
     OUSTER_ROS_PATH=/opt/catkin_ws/src/ouster-ros
@@ -18,7 +18,8 @@ RUN set -xue \
     python3-rosdep          \
     python3-rospkg          \
     python3-bloom           \
-    python3-colcon-common-extensions
+    python3-colcon-common-extensions \
+    ros-${ROS_DISTRO}-robot-body-filter
 
 # Set up non-root build user
 ARG BUILD_UID=1000
@@ -30,6 +31,8 @@ RUN set -xe \
 
 # Install build dependencies using rosdep
 COPY --chown=build:build ouster-ros/package.xml $OUSTER_ROS_PATH/ouster-ros/package.xml
+
+RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
 
 RUN set -xe         \
 && apt-get update   \
