@@ -18,7 +18,8 @@ RUN set -xue \
     python3-rosdep          \
     python3-rospkg          \
     python3-bloom           \
-    python3-colcon-common-extensions
+    python3-colcon-common-extensions \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
     # ros-${ROS_DISTRO}-robot-body-filter
 
 # Set up non-root build user
