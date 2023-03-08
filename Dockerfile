@@ -1,6 +1,6 @@
 ARG ROS_DISTRO=foxy
 
-FROM dustynv/ros:${ROS_DISTRO}-ros-base-l4t-r35.2.1 AS build-env
+FROM ros:${ROS_DISTRO}-ros-core AS build-env
 ENV DEBIAN_FRONTEND=noninteractive \
     BUILD_HOME=/var/lib/build \
     OUSTER_ROS_PATH=/opt/catkin_ws/src/ouster-ros
@@ -32,8 +32,6 @@ RUN set -xe \
 
 # Install build dependencies using rosdep
 COPY --chown=build:build ouster-ros/package.xml $OUSTER_ROS_PATH/ouster-ros/package.xml
-
-RUN rm /etc/ros/rosdep/sources.list.d/20-default.list
 
 RUN set -xe         \
 && apt-get update   \
