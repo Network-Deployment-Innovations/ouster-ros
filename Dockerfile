@@ -3,7 +3,8 @@ ARG ROS_DISTRO=rolling
 FROM ros:${ROS_DISTRO}-ros-core AS build-env
 ENV DEBIAN_FRONTEND=noninteractive \
     BUILD_HOME=/var/lib/build \
-    OUSTER_ROS_PATH=/opt/catkin_ws/src/ouster-ros
+    OUSTER_ROS_PATH=/opt/catkin_ws/src/ouster-ros \
+    RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 RUN set -xue \
 # Turn off installing extra packages globally to slim down rosdep install
@@ -18,7 +19,8 @@ RUN set -xue \
     python3-rosdep          \
     python3-rospkg          \
     python3-bloom           \
-    python3-colcon-common-extensions
+    python3-colcon-common-extensions \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
 
 # Set up non-root build user
 ARG BUILD_UID=1000
