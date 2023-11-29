@@ -36,7 +36,6 @@
 
 namespace sensor = ouster::sensor;
 namespace viz = ouster::viz;
-using ouster_srvs::srv::GetMetadata;
 
 using pixel_type = uint16_t;
 const size_t pixel_value_max = std::numeric_limits<pixel_type>::max();
@@ -53,10 +52,18 @@ class OusterImage : public OusterProcessingNodeBase {
 
    private:
     void on_init() {
-        auto metadata = get_metadata();
-        info = sensor::parse_metadata(metadata);
+        declare_parameter("use_system_default_qos", false);
+        create_metadata_subscriber(
+            [this](const auto& msg) { metadata_handler(msg); });
+        RCLCPP_INFO(get_logger(), "OusterImage: node initialized!");
+    }
+
+    void metadata_handler(const std_msgs::msg::String::ConstPtr& metadata_msg) {
+        RCLCPP_INFO(get_logger(),
+                    "OusterImage: retrieved new sensor metadata!");
+        info = sensor::parse_metadata(metadata_msg->data);
         create_cloud_object();
-        const int n_returns = get_n_returns();
+        const int n_returns = get_n_returns(info);
         create_publishers(n_returns);
         create_subscriptions(n_returns);
     }
@@ -68,22 +75,28 @@ class OusterImage : public OusterProcessingNodeBase {
     }
 
     void create_publishers(int n_returns) {
-        rclcpp::SensorDataQoS qos;
-        nearir_image_pub =
-            create_publisher<sensor_msgs::msg::Image>("nearir_image", qos);
+        bool use_system_default_qos =
+            get_parameter("use_system_default_qos").as_bool();
+        rclcpp::QoS system_default_qos = rclcpp::SystemDefaultsQoS();
+        rclcpp::QoS sensor_data_qos = rclcpp::SensorDataQoS();
+        auto selected_qos =
+            use_system_default_qos ? system_default_qos : sensor_data_qos;
+
+        nearir_image_pub = create_publisher<sensor_msgs::msg::Image>(
+            "nearir_image", selected_qos);
 
         rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr a_pub;
         for (int i = 0; i < n_returns; i++) {
             a_pub = create_publisher<sensor_msgs::msg::Image>(
-                topic_for_return("range_image", i), qos);
+                topic_for_return("range_image", i), selected_qos);
             range_image_pubs.push_back(a_pub);
 
             a_pub = create_publisher<sensor_msgs::msg::Image>(
-                topic_for_return("signal_image", i), qos);
+                topic_for_return("signal_image", i), selected_qos);
             signal_image_pubs.push_back(a_pub);
 
             a_pub = create_publisher<sensor_msgs::msg::Image>(
-                topic_for_return("reflec_image", i), qos);
+                topic_for_return("reflec_image", i), selected_qos);
             reflec_image_pubs.push_back(a_pub);
         }
     }
@@ -108,10 +121,14 @@ class OusterImage : public OusterProcessingNodeBase {
         uint32_t H = info.format.pixels_per_column;
         uint32_t W = info.format.columns_per_frame;
 
-        auto range_image = make_image_msg(H, W, m->header.stamp);
-        auto signal_image = make_image_msg(H, W, m->header.stamp);
-        auto reflec_image = make_image_msg(H, W, m->header.stamp);
-        auto nearir_image = make_image_msg(H, W, m->header.stamp);
+        auto range_image =
+            make_image_msg(H, W, m->header.stamp, m->header.frame_id);
+        auto signal_image =
+            make_image_msg(H, W, m->header.stamp, m->header.frame_id);
+        auto reflec_image =
+            make_image_msg(H, W, m->header.stamp, m->header.frame_id);
+        auto nearir_image =
+            make_image_msg(H, W, m->header.stamp, m->header.frame_id);
 
         ouster::img_t<float> nearir_image_eigen(H, W);
         ouster::img_t<float> signal_image_eigen(H, W);
@@ -172,7 +189,8 @@ class OusterImage : public OusterProcessingNodeBase {
     }
 
     static sensor_msgs::msg::Image::UniquePtr make_image_msg(
-        size_t H, size_t W, const rclcpp::Time& stamp) {
+        size_t H, size_t W, const rclcpp::Time& stamp,
+        const std::string& frame) {
         auto msg = std::make_unique<sensor_msgs::msg::Image>();
         msg->width = W;
         msg->height = H;
@@ -180,6 +198,7 @@ class OusterImage : public OusterProcessingNodeBase {
         msg->encoding = sensor_msgs::image_encodings::MONO16;
         msg->data.resize(W * H * sizeof(pixel_type));
         msg->header.stamp = stamp;
+        msg->header.frame_id = frame;
         return msg;
     }
 

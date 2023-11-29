@@ -11,6 +11,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(ouster_msgs REQUIRED)
@@ -24,8 +25,11 @@ find_package(tf2_eigen REQUIRED)
 
 # ==== Options ====
 add_compile_options(-Wall -Wextra)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 option(CMAKE_POSITION_INDEPENDENT_CODE "Build position independent code." ON)
-
 
 set(_ouster_ros_INCLUDE_DIRS
   include
@@ -98,6 +102,7 @@ function(create_ros2_component
     class_loader
     rclcpp_components
     rclcpp_lifecycle
+    std_msgs
     sensor_msgs
     geometry_msgs
     ${additonal_dependencies}
@@ -151,6 +156,28 @@ rclcpp_components_register_node(os_image_component
   EXECUTABLE os_image
 )
 
+# ==== os_sensor_component ====
+create_ros2_component(os_driver_component
+  "src/os_sensor_node_base.cpp;src/os_sensor_node.cpp;src/os_driver_node.cpp"
+  "std_srvs"
+)
+rclcpp_components_register_node(os_driver_component
+  PLUGIN "ouster_ros::OusterDriver"
+  EXECUTABLE os_driver
+)
+
+
+# ==== Test ====
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_test test/ring_buffer_test.cpp)
+  target_include_directories(${PROJECT_NAME}_test PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+  )
+endif()
+
+
 # ==== Install ====
 install(
   TARGETS
@@ -159,6 +186,7 @@ install(
     os_replay_component
     os_cloud_component
     os_image_component
+    os_driver_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

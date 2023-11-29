@@ -11,35 +11,22 @@
 
 #include <chrono>
 #include <rclcpp/rclcpp.hpp>
-
-#include "ouster_srvs/srv/get_metadata.hpp"
+#include <std_msgs/msg/string.hpp>
 
 namespace ouster_ros {
 
 class OusterProcessingNodeBase : public rclcpp::Node {
    protected:
-    explicit OusterProcessingNodeBase(const std::string& name,
-                                      const rclcpp::NodeOptions& options)
+    OusterProcessingNodeBase(const std::string& name,
+                             const rclcpp::NodeOptions& options)
         : rclcpp::Node(name, options) {}
 
-   protected:
-    bool spin_till_attempts_exahused(const std::string& log_msg,
-                                     std::function<bool(void)> lambda);
-
-    std::string get_metadata();
-
-    int get_n_returns();
-
-    std::string topic_for_return(std::string base, int idx) {
-        if (idx == 0) return base;
-        return base + std::to_string(idx + 1);
-    }
+    void create_metadata_subscriber(
+        std::function<void(const std_msgs::msg::String::ConstSharedPtr)>
+            on_sensor_metadata);
 
    protected:
-    // TODO: Add as node parameters?
-    static const std::chrono::seconds wait_time_per_attempt;
-    static constexpr auto total_attempts = 10;
-
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr metadata_sub;
     ouster::sensor::sensor_info info;
 };
 

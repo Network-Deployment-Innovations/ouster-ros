@@ -30,7 +30,9 @@ class OusterReplay : public OusterSensorNodeBase {
 
         try {
             auto meta_file = parse_parameters();
-            populate_metadata_from_json(meta_file);
+            create_metadata_publisher();
+            load_metadata_from_file(meta_file);
+            publish_metadata();
             create_get_metadata_service();
             RCLCPP_INFO(get_logger(), "Running in replay mode");
         } catch (const std::exception& ex) {
@@ -110,12 +112,9 @@ class OusterReplay : public OusterSensorNodeBase {
         return meta_file;
     }
 
-    void populate_metadata_from_json(const std::string& meta_file) {
+    void load_metadata_from_file(const std::string& meta_file) {
         try {
-            std::ifstream in_file(meta_file);
-            std::stringstream buffer;
-            buffer << in_file.rdbuf();
-            cached_metadata = buffer.str();
+            cached_metadata = read_text_file(meta_file);
             info = sensor::parse_metadata(cached_metadata);
             display_lidar_info(info);
         } catch (const std::runtime_error& e) {
@@ -129,7 +128,6 @@ class OusterReplay : public OusterSensorNodeBase {
     void cleanup() {
         get_metadata_srv.reset();
     }
-
 };
 
 }  // namespace ouster_ros

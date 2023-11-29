@@ -39,7 +39,7 @@ RUN set -xe         \
 && rosdep update --rosdistro=$ROS_DISTRO \
 && rosdep install -y --from-paths $OUSTER_ROS_PATH \
 # use -r for now to prevent rosdep from complaining about ouster_srvs
-    --ignore-src -r
+    -r
 
 # Set up build environment
 COPY --chown=build:build . $OUSTER_ROS_PATH
@@ -55,9 +55,13 @@ RUN set -xe \
 FROM build-env
 
 SHELL ["/bin/bash", "-c"]
+
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && colcon build \
     --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations"
+
+RUN source /opt/ros/$ROS_DISTRO/setup.bash && colcon test \
+    --ctest-args tests ouster_ros --rerun-failed --output-on-failure
 
 # Entrypoint for running Ouster ros:
 #

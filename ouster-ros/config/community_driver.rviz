@@ -28,6 +28,11 @@ Panels:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.5
+  - Class: rviz_common/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: PointCloud2
 Visualization Manager:
   Class: ""
   Displays:
@@ -79,7 +84,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /ouster/points
+        Value: /points
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -87,11 +92,11 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        " os_imu":
+        " imu_data_frame":
           Value: true
-        " os_lidar":
+        " laser_data_frame":
           Value: true
-        " os_sensor":
+        " laser_sensor_frame":
           Value: true
         All Enabled: true
       Marker Scale: 1
@@ -100,10 +105,10 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        " os_sensor":
-          " os_imu":
+        " laser_sensor_frame":
+          " imu_data_frame":
             {}
-          " os_lidar":
+          " laser_data_frame":
             {}
       Update Interval: 0
       Value: true
@@ -119,7 +124,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /ouster/range_image
+        Value: /range_image
       Value: true
     - Class: rviz_default_plugins/Image
       Enabled: true
@@ -133,7 +138,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /ouster/nearir_image
+        Value: /nearir_image
       Value: true
     - Class: rviz_default_plugins/Image
       Enabled: true
@@ -147,7 +152,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /ouster/reflec_image
+        Value: /reflec_image
       Value: true
     - Class: rviz_default_plugins/Image
       Enabled: true
@@ -161,12 +166,12 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /ouster/signal_image
+        Value: /signal_image
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: "os_sensor"
+    Fixed Frame: "laser_sensor_frame"
     Frame Rate: 30
   Name: root
   Tools:
